@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div id="data"></div>
+<button onclick="onLed()">On Led</button>
+<button onclick="offLed()">Off Led</button>
+
+@section scripts{
+    <script>
+        getled();
+        setInterval(getled, 500);
+        function onLed() {
+            $.post(
+                "@Url.Action("SetLed", "Home")",
+                {
+                    pos: true
+                },
+                function () { }
+            );
+        }
+        function offLed() {
+            $.post(
+                "@Url.Action("SetLed", "Home")",
+                {
+                    pos: false
+                },
+                function () { }
+            );
+        }
+        function getled() {
+            $.post(
+                "@Url.Action("GetLed", "Home")",
+                {},
+                function (response) {
+                    response = eval(response);
+                    $('#data').text(response.pos);
+                }
+            );
+        }
+    </script>
+}
