@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using System.IO.Ports;
+using System.Data.SqlClient;
 
 namespace Arduino
 {
@@ -58,6 +59,43 @@ namespace Arduino
             {
                 Led = true;
             }
+        }
+
+        static void WriteDataToDatabase(string data)
+        {
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Server=mysql.zzz.com.ua;Database=alexwebsite_zzz_com_ua;Uid=aw_database;Pwd=AWDBpa55w0rd;";
+            SqlCommand command = new SqlCommand(
+                String.Format("INSERT INTO Arduino (VALUE,MARK) VALUES ({0},'agent')", (data == "true" ? "1" : "0")), 
+                conn);
+
+            conn.Open();
+
+            command.ExecuteReader();
+
+            conn.Close();
+            conn.Dispose();
+        }
+        static string ReadFromDatabase()
+        {
+            string res = "";
+
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Server=mysql.zzz.com.ua;Database=alexwebsite_zzz_com_ua;Uid=aw_database;Pwd=AWDBpa55w0rd;";
+            SqlCommand command = new SqlCommand("SELECT * FROM Arduino WHERE MARK='web'", conn);
+            conn.Open();
+
+            SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                res = (string)reader["VALUE"];
+            }
+
+            conn.Close();
+            conn.Dispose();
+
+
+            return res;
         }
     }
 }
